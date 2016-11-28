@@ -103,11 +103,12 @@
     self.treeController = [[KPTreeController alloc] initWithMapView:self.mapView];
     self.treeController.delegate = self;
     self.treeController.animationOptions = UIViewAnimationOptionCurveEaseOut;
-    self.treeController.gridSize = CGSizeMake(20.f, 20.f);
+    self.treeController.gridSize = CGSizeMake(150.f, 150.f);
     
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    [self.locationManager requestWhenInUseAuthorization];
     
     [self showCurrentLocation:self];
 }
@@ -124,7 +125,7 @@
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-    NSLog(@"didFailWithError error: %@", error);
+    HelloBug(@"didFailWithError error: %@", error);
     [self showDefault:self];
 }
 
@@ -135,7 +136,7 @@
                                                                      longitude:DEFAULT_LONGITUDE]];
 
     if (distance > USER_LOCATION_MAXIMUM_DISTANCE) {
-        NSLog(@"distance: %f", distance);
+        Hello(@"distance: %f", distance);
         [self showDefault:self];
     } else {
         self.showCurrentLocationButton.hidden = NO;
@@ -177,7 +178,7 @@
     [self.treeController setAnnotations:annotations];
     
     // Send data to table view (if table view is the active screen and data just arrived now)
-    NSDictionary *dict = [NSDictionary dictionaryWithObject:self.data forKey:@"data"];
+    NSDictionary *dict = @{@"data": self.data};
     [[NSNotificationCenter defaultCenter] postNotificationName:@"dataIsReady" object:nil userInfo:dict];
 }
 
@@ -186,7 +187,7 @@
     if ([self.navigationController.visibleViewController isKindOfClass:[MIIViewController class]]) {
         [self performSegueWithIdentifier:@"showCompany:" sender:company];
     } else {
-        NSDictionary *dict = [NSDictionary dictionaryWithObject:company forKey:@"company"];
+        NSDictionary *dict = @{@"company": company};
         [[NSNotificationCenter defaultCenter] postNotificationName:@"companyIsReady" object:nil userInfo:dict];
     }
 }
@@ -309,7 +310,7 @@
             }
 
             NSString *subtitle = ((MKPointAnnotation *)annotation).subtitle;
-            UIImage *i = [UIImage imageNamed:[NSString stringWithFormat:@"%@%@", subtitle, @".png"]];
+            UIImage *i = [UIImage imageNamed:subtitle];
             v.image = i;
             
             UIButton *btn = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];

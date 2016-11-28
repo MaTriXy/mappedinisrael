@@ -8,34 +8,19 @@
 
 #import "MIIAppDelegate.h"
 #import "GAI.h"
+#import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
-#import "TestFlight.h"
-#import <Fingertips/MBFingerTipWindow.h>
 
 @implementation MIIAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-
-#ifdef CONFIGURATION_Debug
-    UIViewController *vc = self.window.rootViewController;
-    CGRect frame = [[UIScreen mainScreen] bounds];
-    self.window = [[MBFingerTipWindow alloc] initWithFrame:frame];
-    self.window.rootViewController = vc;
-    [self.window makeKeyAndVisible];
-#endif
-    
-#ifdef CONFIGURATION_Beta
-    // TestFlight
-    [TestFlight takeOff:@"a6d3ce40-d3a2-4ab4-ba36-e99ce94a5284"];
-#endif
-    
     // GAI
     [[GAI sharedInstance] trackerWithTrackingId:@"UA-45602986-1"];
     
     // Crashlytics
-    [Crashlytics startWithAPIKey:@"8a47ccbf8db717681b6ae83cb615504de6fe5eb7"];
-    
+    [Fabric with:@[CrashlyticsKit]];
+
     // Override point for customization after application launch.
     return YES;
 }

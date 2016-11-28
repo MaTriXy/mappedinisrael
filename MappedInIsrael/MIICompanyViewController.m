@@ -41,11 +41,11 @@
     self.tableView.delegate = self;
 
     NSDictionary *category = (NSDictionary *)self.company.companyCategory;
-    self.navigationItem.title = [[MIIData getAllFormatedCategories] objectAtIndex:[[MIIData getAllCategories] indexOfObject:[category valueForKey:@"categoryName"]]];
+    self.navigationItem.title = [MIIData getAllFormatedCategories][[[MIIData getAllCategories] indexOfObject:[category valueForKey:@"categoryName"]]];
     self.hiringLabel.text = [NSString stringWithFormat:@"%@ is currently hiring:", self.company.companyName];
     self.nameLabel.text = self.company.companyName;
     
-    self.descriptionTextView.text = self.company.description;
+    self.descriptionTextView.text = self.company.desc;
     self.textViewHeightConstraint.constant = [self.descriptionTextView fitTextHeight];
     
     self.tableViewHeightConstraint.constant = self.tableView.rowHeight*[self.company.jobs count];
@@ -69,7 +69,7 @@
     point.coordinate = coordinate;
     point.title = self.company.companyName;
     NSDictionary *companyCategory = (NSDictionary *)self.company.companyCategory;
-    point.subtitle = [companyCategory objectForKey:@"categoryName"];
+    point.subtitle = companyCategory[@"categoryName"];
     point.company = self.company;
     [self.mapView addAnnotation:point];
     MKCoordinateRegion region;
@@ -90,7 +90,7 @@
 {
     NSString *emailTitle = @"";
     NSString *messageBody = @"";
-    NSArray *toRecipents = [NSArray arrayWithObject:self.company.contactEmail];
+    NSArray *toRecipents = @[self.company.contactEmail];
     
     MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
     mc.mailComposeDelegate = self;
@@ -136,7 +136,7 @@
         
         v.canShowCallout = NO;
         NSString *subtitle = ((MIIPointAnnotation *)annotation).subtitle;
-        UIImage *i = [UIImage imageNamed:[NSString stringWithFormat:@"%@%@", subtitle, @".png"]];
+        UIImage *i = [UIImage imageNamed:subtitle];
         v.image = i;
     }
 
@@ -162,7 +162,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    MIIJob *job = [self.company.jobs objectAtIndex:indexPath.row];
+    MIIJob *job = (self.company.jobs)[indexPath.row];
     cell.textLabel.text = job.title;
     
     return cell;
@@ -170,7 +170,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self performSegueWithIdentifier:@"showJob:" sender:[self.company.jobs objectAtIndex:indexPath.row]];
+    [self performSegueWithIdentifier:@"showJob:" sender:(self.company.jobs)[indexPath.row]];
 }
 
 - (void) mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
@@ -178,16 +178,16 @@
     switch (result)
     {
         case MFMailComposeResultCancelled:
-            NSLog(@"Mail cancelled");
+            Hello(@"Mail cancelled");
             break;
         case MFMailComposeResultSaved:
-            NSLog(@"Mail saved");
+            Hello(@"Mail saved");
             break;
         case MFMailComposeResultSent:
-            NSLog(@"Mail sent");
+            Hello(@"Mail sent");
             break;
         case MFMailComposeResultFailed:
-            NSLog(@"Mail sent failure: %@", [error localizedDescription]);
+            Hello(@"Mail sent failure: %@", [error localizedDescription]);
             break;
         default:
             break;
